@@ -853,6 +853,29 @@ func TestScrollbarInsets(t *testing.T) {
 	}
 }
 
+func TestPainterCursor(t *testing.T) {
+	var seen Cursor
+	tt := coreNewTester(func(c *context) {
+		coreRow(c).Children(func() {
+			coreBox(c).Size(100, 200).Cursor(CursorText)
+			coreBox(c).Size(100, 200).Cursor(CursorPointer)
+		})
+		coreOverlay(c, func() {
+			coreBox(c).Size(200, 200).PassThrough().Draw(func(p *Painter, r Rect) { seen = p.Cursor() })
+		})
+	}, 200, 200)
+	for _, w := range []struct {
+		x    float32
+		want Cursor
+	}{{50, CursorText}, {150, CursorPointer}} {
+		tt.Move(w.x, 100)
+		tt.Frame()
+		if seen != w.want || tt.Cursor() != w.want {
+			t.Errorf("at %v the painter sees %v, the window shows %v, not %v", w.x, seen, tt.Cursor(), w.want)
+		}
+	}
+}
+
 func TestScrollbarCursor(t *testing.T) {
 	var sc *node
 	var content Rect

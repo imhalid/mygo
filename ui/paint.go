@@ -116,6 +116,18 @@ func atlasGenerations(s *scene.Scene) [2]uint64 {
 // move compute from.
 func (p *Painter) Now() time.Time { return p.rt.c.now }
 
+// Cursor returns the cursor the window shows: that of the element under
+// the pointer, or of the one pressed, as Element.Cursor set it. A drawing
+// that goes with the pointer, as a second pointer following it, takes its
+// shape from it. Over a web view, whose page sets the cursor, it is the
+// default.
+func (p *Painter) Cursor() Cursor {
+	if p.rt.cursor == cursorUnknown {
+		return CursorDefault
+	}
+	return p.rt.cursor
+}
+
 // Accelerated reports whether the frame draws on a GPU: false where it
 // draws in memory (with MYGO_GPU=0, without a GPU MyGo can draw with, as
 // in most virtual machines, and in Render and tests) and where the GPU's
